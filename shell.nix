@@ -11,6 +11,8 @@ let
   }).overrideAttrs (final: previous: {
       # debug build failures
       nativeBuildInputs = previous.nativeBuildInputs ++ [pkgs.breakpointHook];
+      # patch to fix invalid cross-device link
+      patches = [./nix/roc-cache.patch];
       # remove cp from linux, i don't have the lib directory it tried to copy
       postInstall = if pkgs.stdenv.isLinux then ''
           wrapProgram $out/bin/roc --set NIX_GLIBC_PATH ${nixGlibcPath} --prefix PATH : ${

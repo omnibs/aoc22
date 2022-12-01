@@ -1,0 +1,5 @@
+--- roc/crates/packaging/src/cache.rs
++++ roc/crates/packaging/src/cache.rs
+@@ -74,1 +74,1 @@
+-                    fs::rename(tempdir_path, &dest_dir).map_err(Problem::IoErr)?;
++                    fs::copy(tempdir_path, &dest_dir).map_err(Problem::IoErr)?;
