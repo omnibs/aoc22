@@ -3,6 +3,22 @@ app "day1"
     imports [pf.Stdout, pf.File, pf.Task, pf.Path, Json]
     provides [main] to pf
 
+splitListOn : List a, a -> List (List a) | a has Eq
+splitListOn = \list, delim ->
+    result = List.walk list {cur: [], acc: []} (\{cur, acc}, elem ->
+        if elem == delim then
+            {cur: [], acc: List.append acc cur}
+        else
+            {cur: List.append cur elem, acc: acc}
+    )
+    result.acc
+
+yolo : Result ok err -> ok
+yolo = \r ->
+    when r is
+        Ok value -> value
+        Err _ -> crash "yolo"
+
 main =
     content <- "./aoc22/day1.txt"
         |> Path.fromStr
@@ -16,10 +32,15 @@ main =
 
     split = content
         |> Str.split "\n"
-    
+        |> splitListOn ""
+        |> List.map (\list -> List.map list (\x -> x |> Str.toU32 |> yolo))
+        |> List.map List.sum
+        |> List.max
+        |> yolo
+
     split
         |> Encode.toBytes Json.toUtf8
         |> Str.fromUtf8
         |> Result.withDefault "err"
         |> Stdout.line
-    
+
